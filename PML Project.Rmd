@@ -1,0 +1,38 @@
+---
+title: "PML QS Project"
+output: html_document
+---
+First step : create data samples for training and testing and plotting some variables to explore current samples.
+
+```{r}
+library(caret)
+trda<-read.csv("pml-training.csv")
+trains<-createDataPartition(y=trda$classe, p=0.7, list=FALSE)
+trainsa<-trda[trains,]
+testsa<-trda[-trains,]
+nt<-trainsa[sapply(trainsa, function(trainsa) !any(is.na(trainsa)))] 
+trainsa<-nt[,8:93]
+nt<-trainsa[sapply(trainsa, function(trainsa) any(is.numeric(trainsa)))] 
+```
+
+Since I have so many potential predictors it is vital to reduce the variability of my set, so as to make my examination faster.
+So first I subset my data for those containing actual values (ommitting NAs) and then maintaining only numeric values so as to facilitate a principal components analysis and selection.
+Then I go on calculating the correlation of my variables, selecting those being above 0.9 and rebuilding a new training set.
+
+```{raa}
+M<-abs(cor(nt[]))
+diag(M)<-0
+index<-which(M>0.9, arr.ind=T)
+
+ntrain<-trainsa[, index[,1]]
+trainf<-data.frame(ntrain, trainsa$classe)
+```
+By selecting those variables that are highly correlated I can now work with 16 variables for my model.
+Next step: train my model to predict quality levels. Quality levels are marked with A-B-C-D-E Classes so I can either use a classification method or convert those to numerical zones and use a regression method (logistical since I am not predicting values <0 ) to estimate values and classify with zone.
+
+```{rab}
+
+```
+After fitting my classifier I run some diagnostics to check the accuracy of my model through the errors I am getting by testing on my testing sample.
+Then I can run this on the test sample to validate my model.
+Due to limited time, this part is not included in this note.
